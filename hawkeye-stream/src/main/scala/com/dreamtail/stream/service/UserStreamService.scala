@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON
 import com.dreamtail.stream.bean.User
 import com.dreamtail.stream.common.TService
 import com.dreamtail.stream.dao.UserStreamDao
-import com.dreamtail.stream.util.{HBaseUtil, SscUtil}
+import com.dreamtail.stream.util.{HBaseUtil, RedisUtil, SscUtil}
 import org.apache.hadoop.hbase.TableName
 import org.apache.hadoop.hbase.client.Put
 import org.apache.hadoop.hbase.util.Bytes
@@ -60,6 +60,7 @@ class UserStreamService extends TService {
             table.put(put)
           }
         )
+        RedisUtil.putRedisOffset(topic, groupId, offsetRanges)
       }
     )
 
