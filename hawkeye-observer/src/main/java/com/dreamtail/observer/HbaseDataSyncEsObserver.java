@@ -13,6 +13,7 @@ import org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment;
 import org.apache.hadoop.hbase.coprocessor.RegionObserver;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.wal.WALEdit;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -38,12 +39,14 @@ public class HbaseDataSyncEsObserver implements RegionObserver, RegionCoprocesso
     public void start(CoprocessorEnvironment env) throws IOException {
         // init ES client
         ESClient.initEsClient();
+        KafkaSyncProducer.initProducer();
         LOG.info("****init start*****");
     }
 
     @Override
     public void stop(CoprocessorEnvironment env) throws IOException {
         ESClient.closeEsClient();
+        KafkaSyncProducer.destroyProducer();
         // shutdown time task
         ElasticSearchBulkOperator.shutdownScheduEx();
         LOG.info("****end*****");
@@ -68,6 +71,13 @@ public class HbaseDataSyncEsObserver implements RegionObserver, RegionCoprocesso
             LOG.info(json.toString());
             ElasticSearchBulkOperator.addUpdateBuilderToBulk(ESClient.client.prepareUpdate("user", "dmp_ods", indexId).setDocAsUpsert(true).setDoc(json));
             LOG.info("**** postPut success*****");
+
+            //sync request to kafka
+            LOG.info("**** save Kafka sync*****");
+            ProducerRecord<String, String> record = new ProducerRecord<>("sync_user_age", indexId);
+            KafkaSyncProducer.producer.send(record);
+            LOG.info("**** save Kafka sync success*****");
+
         } catch (Exception ex) {
             LOG.error("observer put  a doc, index [ " + "user" + " ]" + "indexId [" + indexId + "] error : " + ex.getMessage());
         }

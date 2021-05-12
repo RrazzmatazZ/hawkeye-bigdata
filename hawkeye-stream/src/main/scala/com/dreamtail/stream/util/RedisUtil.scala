@@ -58,7 +58,7 @@ object RedisUtil {
     //将java的map转换为scala的map
     val oMap: Map[TopicPartition, Long] = offsetMap.asScala.map {
       case (partition, offset) =>
-        println("读取分区偏移量：" + partition + ":" + offset)
+        println("读取分区偏移量：" + offsetKey + ":" + partition + ":" + offset)
         (new TopicPartition(topic, partition.toInt), offset.toLong)
     }.toMap
     oMap
@@ -82,7 +82,7 @@ object RedisUtil {
       val fromOffset: Long = offsetRange.fromOffset
       val untilOffset: Long = offsetRange.untilOffset
       offsetMap.put(partitionId.toString, untilOffset.toString)
-      println("保存分区" + partitionId + ":" + fromOffset + "----->" + untilOffset)
+      println("保存分区：" + offsetKey + ":" + + partitionId + ":" + fromOffset + "----->" + untilOffset)
     }
     val jedis: Jedis = this.getInstance
     jedis.hmset(offsetKey, offsetMap)
