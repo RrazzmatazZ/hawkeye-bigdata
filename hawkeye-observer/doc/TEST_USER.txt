@@ -1,0 +1,4 @@
+create 'TEST_USER','cf1','cf2'
+disable 'TEST_USER'
+alter 'TEST_USER', METHOD => 'table_att', 'coprocessor' => 'hdfs://hadoop/user/admin/hbase_observer/hbase-observer-log-1.0.jar|org.example.HbaseDataSyncEsObserver|1001'
+enable 'TEST_USER'
