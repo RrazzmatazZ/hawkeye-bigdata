@@ -34,11 +34,16 @@ class UserAgeStreamService extends TService {
 
     val ageStream: DStream[Int] = offsetDStream.map(item => {
       RedisUtil.putRedisOffset(topic, groupId, offsetRanges)
-      val bornYear: String = item.value().substring(6, 10)
-      val currentYear = LocalDate.now().getYear
-      currentYear - bornYear.toInt
+      var age = 0
+      val value = item.value()
+      if (value.length > 10) {
+        val bornYear: String = item.value().substring(6, 10)
+        val currentYear = LocalDate.now().getYear
+        age = currentYear - bornYear.toInt
+      }
+      age
     })
-    
+
     ageStream.print()
   }
 }

@@ -63,30 +63,5 @@ class UserStreamService extends TService {
         RedisUtil.putRedisOffset(topic, groupId, offsetRanges)
       }
     )
-
-    //    //数据入库
-    //    import org.apache.phoenix.spark._
-    //    mapStream.foreachRDD(
-    //      (rdd: RDD[User]) => {
-    //        rdd.saveToPhoenix(
-    //          "TEST_USER",
-    //          Seq("ID", "NAME", "SEX"),
-    //          new Configuration,
-    //          Some("hadoop242,hadoop248,hadoop249:2181")
-    //        )
-    //
-    //        RedisUtil.putRedisOffset(topic, groupId, offsetRanges)
-    //      }
-    //    )
-
-    //    mapStream.foreachRDD(
-    //      rdd => {
-    //        rdd.foreach(
-    //          item => {
-    //            HBaseUtils.
-    //          }
-    //        )
-    //      }
-    //    )
   }
 }
